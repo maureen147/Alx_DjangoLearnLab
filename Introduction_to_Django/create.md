@@ -1,11 +1,11 @@
 # CREATE Operation
 
 ## Command:
-```python
+\`\`\`python
 from bookshelf.models import Book
 book = Book(title="1984", author="George Orwell", publication_year=1949)
 book.save()
-```
+\`\`\`
 
 ## Expected Output:
-Book created successfully in database.
+Book created successfully.
