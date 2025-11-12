@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to your Dashboard, {{ user.username }}</h1>
+    
+    <h2>Your Permissions:</h2>
+    <ul>
+        <li>Can View Books: {{ can_view|yesno:"Yes,No" }}</li>
+        <li>Can Create Books: {{ can_create|yesno:"Yes,No" }}</li>
+        <li>Can Edit Books: {{ can_edit|yesno:"Yes,No" }}</li>
+        <li>Can Delete Books: {{ can_delete|yesno:"Yes,No" }}</li>
+    </ul>
+    
+    <h2>Available Actions:</h2>
+    <ul>
+        {% if can_view %}
+        <li><a href="{% url 'list_books' %}">View All Books</a></li>
+        {% endif %}
+        
+        {% if can_create %}
+        <li><a href="{% url 'add_book' %}">Add New Book</a></li>
+        {% endif %}
+        
+        {% if can_view %}
+        <li><a href="{% url 'book_detail' 1 %}">View Book Details (Example)</a></li>
+        {% endif %}
+    </ul>
+    
+    <p><a href="{% url 'admin_view' %}">Admin Panel (if you have all permissions)</a></p>
+</body>
+</html>

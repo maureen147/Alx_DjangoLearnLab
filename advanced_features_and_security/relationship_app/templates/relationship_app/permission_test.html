@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Permission Test</title>
+</head>
+<body>
+    <h1>Permission Test Results</h1>
+    
+    <h2>User: {{ user.username }}</h2>
+    
+    <h3>Direct Permission Checks:</h3>
+    <ul>
+        <li>can_view_book: {{ perms.relationship_app.can_view_book|yesno:"Yes,No" }}</li>
+        <li>can_create_book: {{ perms.relationship_app.can_create_book|yesno:"Yes,No" }}</li>
+        <li>can_edit_book: {{ perms.relationship_app.can_edit_book|yesno:"Yes,No" }}</li>
+        <li>can_delete_book: {{ perms.relationship_app.can_delete_book|yesno:"Yes,No" }}</li>
+    </ul>
+    
+    <h3>Group Membership:</h3>
+    <ul>
+        {% for group in user.groups.all %}
+        <li>{{ group.name }}</li>
+        {% empty %}
+        <li>No groups assigned</li>
+        {% endfor %}
+    </ul>
+    
+    <p><a href="{% url 'dashboard' %}">Back to Dashboard</a></p>
+</body>
+</html>

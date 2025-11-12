@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Admin View</title>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
-    <p>Welcome, Admin! You have full access to the system.</p>
-    <a href="{% url 'list_books' %}">Back to Books</a>
+    <h1>Admin Book Management</h1>
+    <p>You have all permissions for book management.</p>
+    
+    <h2>All Books:</h2>
+    <ul>
+        {% for book in books %}
+        <li>{{ book.title }} by {{ book.author.name }} ({{ book.publication_year }})</li>
+        {% endfor %}
+    </ul>
+    
+    <p><a href="{% url 'dashboard' %}">Back to Dashboard</a></p>
 </body>
 </html>
