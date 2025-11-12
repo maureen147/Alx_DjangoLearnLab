@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bookshelf Dashboard</title>
+</head>
+<body>
+    <h1>Bookshelf Dashboard</h1>
+    <p>Welcome, {{ user.username }}!</p>
+    
+    <h2>Your Permissions:</h2>
+    <ul>
+        <li>Can View Books: {{ can_view|yesno:"Yes,No" }}</li>
+        <li>Can Create Books: {{ can_create|yesno:"Yes,No" }}</li>
+        <li>Can Edit Books: {{ can_edit|yesno:"Yes,No" }}</li>
+        <li>Can Delete Books: {{ can_delete|yesno:"Yes,No" }}</li>
+    </ul>
+    
+    <h2>Available Actions:</h2>
+    <ul>
+        {% if can_view %}
+        <li><a href="{% url 'bookshelf:list_books' %}">View All Books</a></li>
+        {% endif %}
+        
+        {% if can_create %}
+        <li><a href="{% url 'bookshelf:add_book' %}">Add New Book</a></li>
+        {% endif %}
+    </ul>
+</body>
+</html>

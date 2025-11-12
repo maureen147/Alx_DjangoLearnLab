@@ -53,7 +53,7 @@ def delete_book(request, book_id):
     if request.method == 'POST':
         book.delete()
         messages.success(request, 'Book deleted successfully!')
-            return redirect('bookshelf:list_books')
+        return redirect('bookshelf:list_books')
     return render(request, 'bookshelf/delete_book.html', {'book': book})
 
 # Public view that doesn't require special permissions
