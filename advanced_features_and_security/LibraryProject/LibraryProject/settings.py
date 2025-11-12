@@ -5,7 +5,7 @@ Django settings for LibraryProject project.
 from pathlib import Path
 import os
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = 'django-insecure-$+52(ulh)0bw20&jqazs&y33n(z0_&d=q1299p)%i_4r0$)#_#'
 DEBUG = True
@@ -18,8 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf',          # Root level app
-    'relationship_app',   # Root level app
+    'bookshelf',
+    'relationship_app',
 ]
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'LibraryProject.urls'
+ROOT_URLCONF = 'LibraryProject.LibraryProject.urls'
 
 TEMPLATES = [
     {
@@ -54,7 +54,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'LibraryProject.wsgi.application'
+WSGI_APPLICATION = 'LibraryProject.LibraryProject.wsgi.application'
 
 DATABASES = {
     'default': {
