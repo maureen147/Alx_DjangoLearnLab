@@ -6,7 +6,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.LibraryProject.s
 django.setup()
 
 from django.contrib.auth.models import User, Group
-from relationship_app.models import Book, Author
+from bookshelf.models import Book, Author
 
 def test_permissions():
     print("Testing Permissions and Groups Setup...")
@@ -24,6 +24,17 @@ def test_permissions():
     print("Book Model Permissions:")
     for perm in permissions:
         print(f"  - {perm.codename}: {perm.name}")
+    
+    # Verify the exact permission names required
+    required_permissions = ['can_view', 'can_create', 'can_edit', 'can_delete']
+    existing_permissions = [perm.codename for perm in permissions]
+    
+    print("\nRequired Permissions Check:")
+    for perm in required_permissions:
+        if perm in existing_permissions:
+            print(f"  ✅ {perm} - FOUND")
+        else:
+            print(f"  ❌ {perm} - MISSING")
     
     print("\n✅ Permissions and Groups setup completed successfully!")
 
