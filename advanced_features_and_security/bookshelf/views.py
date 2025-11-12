@@ -9,7 +9,14 @@ class BookForm(forms.ModelForm):
         model = Book
         fields = ['title', 'author', 'publication_year']
 
-# View to list books - requires can_view permission
+# Book list view - requires can_view permission
+@login_required
+@permission_required('bookshelf.can_view', raise_exception=True)
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'bookshelf/book_list.html', {'books': books})
+
+# View to list books (alternative name) - requires can_view permission
 @login_required
 @permission_required('bookshelf.can_view', raise_exception=True)
 def list_books(request):
@@ -25,7 +32,7 @@ def add_book(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Book created successfully!')
-            return redirect('bookshelf:list_books')
+            return redirect('bookshelf:book_list')
     else:
         form = BookForm()
     return render(request, 'bookshelf/add_book.html', {'form': form})
@@ -40,7 +47,7 @@ def edit_book(request, book_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Book updated successfully!')
-            return redirect('bookshelf:list_books')
+            return redirect('bookshelf:book_list')
     else:
         form = BookForm(instance=book)
     return render(request, 'bookshelf/edit_book.html', {'form': form, 'book': book})
@@ -53,7 +60,7 @@ def delete_book(request, book_id):
     if request.method == 'POST':
         book.delete()
         messages.success(request, 'Book deleted successfully!')
-            return redirect('bookshelf:list_books')
+        return redirect('bookshelf:book_list')
     return render(request, 'bookshelf/delete_book.html', {'book': book})
 
 # Public view that doesn't require special permissions
