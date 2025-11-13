@@ -13,3 +13,12 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('admin-view/', views.admin_view, name='admin_view'),
 ]
+from . import views_example
+
+urlpatterns += [
+    path('example-form/', views_example.example_form_view, name='example_form'),
+    path('example-form/success/', views_example.example_form_success, name='example_form_success'),
+    path('secure-search/', views_example.secure_search_view, name='secure_search'),
+    path('user-registration/', views_example.user_registration_view, name='user_registration'),
+    path('registration/success/', views_example.registration_success, name='registration_success'),
+]
