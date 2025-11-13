@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add Book</title>
+    <title>Edit Book</title>
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';">
 </head>
 <body>
-    <h1>Add New Book</h1>
+    <h1>Edit Book: {{ book.title }}</h1>
     
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Add Book</button>
+        <button type="submit">Update Book</button>
     </form>
     
     <p><a href="{% url 'bookshelf:book_list' %}">Back to Book List</a></p>

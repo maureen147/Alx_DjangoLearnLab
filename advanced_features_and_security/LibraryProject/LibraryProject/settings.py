@@ -11,6 +11,17 @@ SECRET_KEY = 'django-insecure-$+52(ulh)0bw20&jqazs&y33n(z0_&d=q1299p)%i_4r0$)#_#
 DEBUG = True
 ALLOWED_HOSTS = []
 
+# Security Middleware - CSRF protection is enabled by default
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -24,20 +35,25 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# Security Settings
+SECURE_BROWSER_XSS_FILTER = True  # XSS protection
+SECURE_CONTENT_TYPE_NOSNIFF = True  # MIME type sniffing protection
+X_FRAME_OPTIONS = 'DENY'  # Clickjacking protection
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+# CSRF Settings
+CSRF_COOKIE_HTTPONLY = True  # Make CSRF cookie HTTP only
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_TRUSTED_ORIGINS = []  # Add trusted domains in production
 
-ROOT_URLCONF = 'LibraryProject.LibraryProject.urls'
+# Session Security
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Set to True in production
+
+# Content Security Policy (CSP) - Basic implementation
+# For full CSP, consider using django-csp package
+SECURE_REFERRER_POLICY = 'same-origin'
+
+ROOT_URLCONF = 'LibraryProject.urls'
 
 TEMPLATES = [
     {
@@ -54,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'LibraryProject.LibraryProject.wsgi.application'
+WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -69,6 +85,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -85,3 +104,27 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Media settings for profile photos
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Logging configuration for security monitoring
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'security.log'),
+        },
+    },
+    'loggers': {
+        'bookshelf': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

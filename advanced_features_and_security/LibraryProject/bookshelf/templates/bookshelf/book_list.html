@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>Book List</title>
+    <!-- Basic Content Security Policy meta tag -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';">
 </head>
 <body>
     <h1>Book List</h1>
@@ -9,6 +11,12 @@
     {% if perms.bookshelf.can_create %}
     <p><a href="{% url 'bookshelf:add_book' %}">Add New Book</a></p>
     {% endif %}
+    
+    <!-- Secure search form -->
+    <form method="get" action="{% url 'bookshelf:book_list' %}">
+        <input type="text" name="q" placeholder="Search books..." value="{{ search_query|default:'' }}" maxlength="100">
+        <button type="submit">Search</button>
+    </form>
     
     <ul>
         {% for book in books %}
@@ -18,7 +26,10 @@
             - <a href="{% url 'bookshelf:edit_book' book.id %}">Edit</a>
             {% endif %}
             {% if perms.bookshelf.can_delete %}
-            - <a href="{% url 'bookshelf:delete_book' book.id %}">Delete</a>
+            - <form method="post" action="{% url 'bookshelf:delete_book' book.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('Are you sure you want to delete {{ book.title|escapejs }}?')">Delete</button>
+              </form>
             {% endif %}
         </li>
         {% empty %}
