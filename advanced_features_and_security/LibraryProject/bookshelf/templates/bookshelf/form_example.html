@@ -5,35 +5,34 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self';">
 </head>
 <body>
-    <h1>Secure Form Example</h1>
+    <h1>Secure Form Example using ExampleForm</h1>
     
-    <h2>User Registration Form (Example)</h2>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <h2>ExampleForm in Action</h2>
     <form method="post">
         {% csrf_token %}
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" maxlength="150" required>
-        </div>
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" minlength="8" required>
-        </div>
-        <div>
-            <button type="submit">Register</button>
-        </div>
+        {{ form.as_p }}
+        <button type="submit">Submit Securely</button>
     </form>
     
     <h3>Security Features Implemented:</h3>
     <ul>
         <li>✅ CSRF Token Protection</li>
-        <li>✅ Input Validation (required fields)</li>
+        <li>✅ Input Validation (required fields, length constraints)</li>
         <li>✅ Input Sanitization (maxlength, type constraints)</li>
         <li>✅ Secure Password Field</li>
         <li>✅ Content Security Policy</li>
+        <li>✅ ExampleForm imported and used in views</li>
     </ul>
+    
+    <p><a href="{% url 'bookshelf:example_form_demo' %}">Advanced ExampleForm Demo</a></p>
+    <p><a href="{% url 'bookshelf:dashboard' %}">Back to Dashboard</a></p>
 </body>
 </html>
