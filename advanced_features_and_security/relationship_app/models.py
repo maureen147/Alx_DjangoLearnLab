@@ -14,14 +14,13 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     publication_year = models.IntegerField()
-    libraries = models.ManyToManyField('Library', related_name='books')
+    library = models.ForeignKey('Library', related_name='books', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
         permissions = [
-            # Custom permissions as required by the task
             ("can_view_book", "Can view book"),
             ("can_create_book", "Can create book"),
             ("can_edit_book", "Can edit book"),
@@ -48,10 +47,10 @@ class UserProfile(models.Model):
         return f"{self.user.username} - {self.role}"
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_profile(sender, instance, created, **kwargs):
+def create_user_profile(sender, instance, created, **kwargs):  # FIXED: Remove extra indentation
     if created:
         UserProfile.objects.create(user=instance)
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def save_user_profile(sender, instance, **kwargs):
+def save_user_profile(sender, instance, **kwargs):  # FIXED: Remove extra indentation
     instance.userprofile.save()

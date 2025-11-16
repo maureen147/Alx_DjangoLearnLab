@@ -1,7 +1,9 @@
 from django.urls import path
-from . import views
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from . import views
+
+
 
 @login_required
 def permission_test(request):
@@ -16,4 +18,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('admin-view/', views.admin_view, name='admin_view'),
     path('permission-test/', permission_test, name='permission_test'),
+    # ADD THIS LINE for the library detail view:
+    path('library/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
 ]
