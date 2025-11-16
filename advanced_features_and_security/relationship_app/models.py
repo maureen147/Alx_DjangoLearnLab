@@ -33,6 +33,13 @@ class Library(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Librarian(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    library = models.ForeignKey('Library', on_delete=models.CASCADE)  # This "library" field is required
+
+    def __str__(self):
+        return f"{self.user.username} - {self.library.name}"
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
