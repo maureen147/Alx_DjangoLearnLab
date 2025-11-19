@@ -33,6 +33,15 @@ class Library(models.Model):
     def __str__(self):
         return self.name
 
+# ADD THE LIBRARIAN MODEL HERE
+class Librarian(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    library = models.ForeignKey(Library, on_delete=models.CASCADE)
+    employee_id = models.CharField(max_length=20, unique=True)
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.library.name}"
+
 class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('Admin', 'Admin'),
