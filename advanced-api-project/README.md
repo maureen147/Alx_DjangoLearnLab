@@ -53,3 +53,50 @@ The Book ListView supports advanced query capabilities:
 - Search and filter: `/api/books/?search=potter&publication_year=1997`
 - Filter and order: `/api/books/?author=1&ordering=-publication_year`
 - All features: `/api/books/?search=rowling&publication_year=1997&ordering=title`
+
+## Testing
+
+### Running Tests
+
+To run the test suite:
+
+\`\`\`bash
+python manage.py test api
+\`\`\`
+
+### Test Coverage
+
+The test suite covers:
+
+**Book API Tests:**
+- List books (unauthorized access)
+- Create book (authorized/unauthorized)
+- Retrieve book details  
+- Update book (authorized/unauthorized)
+- Delete book (authorized/unauthorized)
+- Filter by publication_year and author
+- Search by title and author name
+- Order by title and publication_year
+- Combined filtering, searching, ordering
+- Validation for publication_year
+
+**Author API Tests:**
+- List authors
+- Create author (authorized/unauthorized)
+
+### Test Structure
+
+- Uses Django's TestCase and APIClient
+- Sets up test database automatically
+- Tests both authenticated and unauthenticated access
+- Verifies status codes and response data
+- Tests all CRUD operations
+- Tests filtering, searching, and ordering features
+
+### Example Test Run
+
+\`\`\`bash
+python manage.py test api -v 2
+\`\`\`
+
+This will show detailed test output including all test methods and their results.
