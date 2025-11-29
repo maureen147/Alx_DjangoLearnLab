@@ -1,32 +1,23 @@
 from rest_framework import generics
-from .models import Author, Book
-from .serializers import AuthorSerializer, BookSerializer
+from .models import Book
+from .serializers import BookSerializer
 
-class AuthorListCreateView(generics.ListCreateAPIView):
-    """
-    API view to list all authors or create a new author.
-    """
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-
-class AuthorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API view to retrieve, update, or delete a specific author.
-    """
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
-
-class BookListCreateView(generics.ListCreateAPIView):
-    """
-    API view to list all books or create a new book.
-    Includes validation for publication_year.
-    """
+class ListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API view to retrieve, update, or delete a specific book.
-    """
+class DetailView(generics.RetrieveAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class CreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class UpdateView(generics.UpdateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class DeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
