@@ -33,3 +33,23 @@ This project demonstrates advanced API development with Django REST Framework, f
 1. Install dependencies:
 ```bash
 pip install django djangorestframework django-filter
+## Filtering, Searching and Ordering
+
+The Book ListView supports advanced query capabilities:
+
+### Filtering
+- Filter by publication_year: `?publication_year=2020`
+- Filter by author: `?author=1`
+
+### Searching  
+- Search in title and author name: `?search=harry`
+
+### Ordering
+- Order by title: `?ordering=title`
+- Order by publication_year: `?ordering=-publication_year`
+- Order by author name: `?ordering=author__name`
+
+### Examples:
+- Search and filter: `/api/books/?search=potter&publication_year=1997`
+- Filter and order: `/api/books/?author=1&ordering=-publication_year`
+- All features: `/api/books/?search=rowling&publication_year=1997&ordering=title`
