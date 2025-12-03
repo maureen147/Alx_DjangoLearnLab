@@ -82,7 +82,7 @@ class DetailView(DetailView):
 class CreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
-    template_name = 'blog/post_form.html'
+    template_name = 'blog/post_create.html'
     
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -91,7 +91,7 @@ class CreateView(LoginRequiredMixin, CreateView):
 class UpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
-    template_name = 'blog/post_form.html'
+    template_name = 'blog/post_update.html'
     
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -103,7 +103,7 @@ class UpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class DeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_confirm_delete.html'
+    template_name = 'blog/post_delete.html'
     success_url = reverse_lazy('post-list')
     
     def test_func(self):
