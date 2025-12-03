@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Django Blog</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django Blog{% endblock %}</title>
+    
+    <!-- Load static files -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <nav>
@@ -11,7 +17,7 @@
             <a href="{% url 'post_create' %}">New Post</a>
             <form method="post" action="{% url 'logout' %}" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit">Logout</button>
+                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; padding: 0; margin: 0;">Logout</button>
             </form>
         {% else %}
             <a href="{% url 'login' %}">Login</a>
@@ -19,12 +25,17 @@
         {% endif %}
     </nav>
     
-    {% if messages %}
-        {% for message in messages %}
-            <div>{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-    
-    {% block content %}{% endblock %}
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
 </html>
