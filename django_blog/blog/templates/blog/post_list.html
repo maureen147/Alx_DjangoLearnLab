@@ -1,0 +1,25 @@
+<!-- blog/templates/blog/post_list.html -->
+{% extends 'blog/base.html' %}
+
+{% block title %}All Posts - Django Blog{% endblock %}
+
+{% block content %}
+<h1>Blog Posts</h1>
+
+{% if posts %}
+    {% for post in posts %}
+    <article class="post">
+        <h2>{{ post.title }}</h2>
+        <div class="post-meta">
+            <span>By {{ post.author.username }}</span>
+            <span>|</span>
+            <span>{{ post.published_date|date:"F d, Y" }}</span>
+        </div>
+        <p>{{ post.content|truncatewords:100 }}</p>
+        <a href="{% url 'post-detail' post.pk %}" class="btn">Read More</a>
+    </article>
+    {% endfor %}
+{% else %}
+    <p>No posts available yet. <a href="/admin/">Login to admin</a> to create your first post!</p>
+{% endif %}
+{% endblock %}

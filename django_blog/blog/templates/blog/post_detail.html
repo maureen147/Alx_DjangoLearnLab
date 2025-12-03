@@ -1,0 +1,23 @@
+<!-- blog/templates/blog/post_detail.html -->
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }} - Django Blog{% endblock %}
+
+{% block content %}
+<article class="post-detail">
+    <h1>{{ post.title }}</h1>
+    <div class="post-meta">
+        <span>By {{ post.author.username }}</span>
+        <span>|</span>
+        <span>{{ post.published_date|date:"F d, Y H:i" }}</span>
+    </div>
+    
+    <div class="post-content">
+        {{ post.content|linebreaks }}
+    </div>
+    
+    <div class="post-actions">
+        <a href="{% url 'post-list' %}" class="btn">Back to Posts</a>
+    </div>
+</article>
+{% endblock %}

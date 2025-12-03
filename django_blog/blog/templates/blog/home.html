@@ -1,0 +1,28 @@
+<!-- blog/templates/blog/home.html -->
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Django Blog</h1>
+    <p>A simple blogging platform built with Django</p>
+    <a href="{% url 'post-list' %}" class="btn">View All Posts</a>
+</div>
+
+<section class="features">
+    <h2>Features</h2>
+    <div class="feature-grid">
+        <div class="feature">
+            <h3>Easy to Use</h3>
+            <p>Simple interface for writing and managing blog posts</p>
+        </div>
+        <div class="feature">
+            <h3>Secure</h3>
+            <p>Built with Django's security features</p>
+        </div>
+        <div class="feature">
+            <h3>Responsive</h3>
+            <p>Works on all devices</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
