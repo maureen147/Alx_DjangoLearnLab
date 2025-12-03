@@ -5,37 +5,48 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
+from django.db.models import Q
+from taggit.models import Tag  # Import Tag from django-taggit
 from .models import Post, Comment
-from .forms import CommentForm
+from .forms import PostForm, CommentForm, SearchForm
 
-# Your existing views
 def home(request):
-    return render(request, 'blog/home.html')
+    recent_posts = Post.objects.order_by('-published_date')[:5]
+    
+    # Get popular tags from django-taggit
+    from taggit.models import Tag
+    popular_tags = Tag.objects.annotate(
+        num_times=models.Count('taggit_taggeditem_items')
+    ).order_by('-num_times')[:10]
+    
+    return render(request, 'blog/home.html', {
+        'recent_posts': recent_posts,
+        'popular_tags': popular_tags,
+        'search_form': SearchForm()
+    })
 
 def register_view(request):
-    # Your register view
-    pass
+    # Your registration logic
+    return render(request, 'blog/register.html')
 
 def login_view(request):
-    # Your login view
-    pass
+    # Your login logic
+    return render(request, 'blog/login.html')
 
 def logout_view(request):
-    # Your logout view
+    # Your logout logic
     pass
 
 def profile_view(request):
-    # Your profile view
-    pass
+    # Your profile logic
+    return render(request, 'blog/profile.html')
 
-# Your existing Post views
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
-    ordering = ['-created_date']
-    paginate_by = 5
+    ordering = ['-published_date']
+    paginate_by = 10
 
 class PostDetailView(DetailView):
     model = Post
@@ -43,26 +54,27 @@ class PostDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comment_set.all().order_by('-created_at')
+        context['comments'] = self.object.comments.all()
         context['form'] = CommentForm()
         return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm
     template_name = 'blog/post_form.html'
     
     def form_valid(self, form):
         form.instance.author = self.request.user
+        messages.success(self.request, 'Your post has been created successfully!')
         return super().form_valid(form)
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm
     template_name = 'blog/post_form.html'
     
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        messages.success(self.request, 'Your post has been updated successfully!')
         return super().form_valid(form)
     
     def test_func(self):
@@ -78,14 +90,13 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author
 
-# NEW: Comment Generic Views
+# Comment views (keep your existing ones)
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_form.html'
     
     def form_valid(self, form):
-        # Get the post from URL parameter
         post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
         form.instance.author = self.request.user
         form.instance.post = post
@@ -128,53 +139,49 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         comment = self.get_object()
         return reverse('post-detail', kwargs={'pk': comment.post.pk})
 
-# Keep your existing function-based views or remove them if using generic views
-@login_required
-def add_comment(request, pk):
-    # You can keep this or use CommentCreateView instead
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.author = request.user
-            comment.save()
-            messages.success(request, 'Your comment has been added!')
-            return redirect('post-detail', pk=post.pk)
-    return redirect('post-detail', pk=post.pk)
+# Search and Tag views
+def search_posts(request):
+    form = SearchForm(request.GET or None)
+    posts = Post.objects.all()
+    query = ''
+    
+    if form.is_valid() and form.cleaned_data.get('query'):
+        query = form.cleaned_data['query']
+        search_in = form.cleaned_data.get('search_in', 'all')
+        
+        # Build Q objects for search
+        q_objects = Q()
+        
+        if search_in in ['all', 'title']:
+            q_objects |= Q(title__icontains=query)
+        
+        if search_in in ['all', 'content']:
+            q_objects |= Q(content__icontains=query)
+        
+        if search_in in ['all', 'tags']:
+            q_objects |= Q(tags__name__icontains=query)
+        
+        posts = posts.filter(q_objects).distinct()
+    
+    return render(request, 'blog/search_results.html', {
+        'form': form,
+        'posts': posts,
+        'query': query
+    })
 
-@login_required
-def edit_comment(request, pk):
-    # You can keep this or use CommentUpdateView instead
-    comment = get_object_or_404(Comment, pk=pk)
-    if comment.author != request.user:
-        messages.error(request, 'You are not authorized to edit this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
+class PostsByTagView(ListView):
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 10
     
-    if request.method == 'POST':
-        form = CommentForm(request.POST, instance=comment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your comment has been updated!')
-            return redirect('post-detail', pk=comment.post.pk)
-    else:
-        form = CommentForm(instance=comment)
+    def get_queryset(self):
+        # Get tag from django-taggit
+        from taggit.models import Tag
+        self.tag = get_object_or_404(Tag, slug=self.kwargs.get('tag_slug'))
+        return Post.objects.filter(tags=self.tag).order_by('-published_date')
     
-    return render(request, 'blog/comment_form.html', {'form': form, 'comment': comment})
-
-@login_required
-def delete_comment(request, pk):
-    # You can keep this or use CommentDeleteView instead
-    comment = get_object_or_404(Comment, pk=pk)
-    if comment.author != request.user:
-        messages.error(request, 'You are not authorized to delete this comment.')
-        return redirect('post-detail', pk=comment.post.pk)
-    
-    if request.method == 'POST':
-        post_pk = comment.post.pk
-        comment.delete()
-        messages.success(request, 'Your comment has been deleted!')
-        return redirect('post-detail', pk=post_pk)
-    
-    return render(request, 'blog/comment_confirm_delete.html', {'comment': comment})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.tag
+        return context
