@@ -59,4 +59,86 @@
         </a>
     </div>
 </article>
+
+<!-- Comments Section -->
+<section class="comments-section">
+    <div class="comments-header">
+        <h2>
+            <i class="fas fa-comments"></i>
+            Comments ({{ comments.count }})
+        </h2>
+    </div>
+    
+    <!-- Add Comment Form (for authenticated users) -->
+    {% if user.is_authenticated %}
+        <div class="add-comment">
+            <h3>Add a Comment</h3>
+            <form method="POST" action="{% url 'add-comment' post.pk %}">
+                {% csrf_token %}
+                {{ comment_form.content }}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Post Comment
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="login-prompt">
+            <p>
+                <a href="{% url 'login' %}">Login</a> to leave a comment.
+            </p>
+        </div>
+    {% endif %}
+    
+    <!-- Comments List -->
+    <div class="comments-list">
+        {% if comments %}
+            {% for comment in comments %}
+                <div class="comment-card" id="comment-{{ comment.pk }}">
+                    <div class="comment-header">
+                        <div class="comment-author">
+                            {% if comment.author.profile.profile_pic %}
+                                <img src="{{ comment.author.profile.profile_pic.url }}" 
+                                     alt="{{ comment.author.username }}" 
+                                     class="comment-author-img">
+                            {% else %}
+                                <div class="comment-author-img-placeholder">
+                                    {{ comment.author.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="comment-author-details">
+                                <span class="comment-author-name">{{ comment.author.username }}</span>
+                                <span class="comment-date">
+                                    <i class="fas fa-clock"></i>
+                                    {{ comment.created_at|date:"F d, Y H:i" }}
+                                    {% if comment.updated_at != comment.created_at %}
+                                        (edited)
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {% if comment.author == user %}
+                            <div class="comment-actions">
+                                <a href="{% url 'edit-comment' comment.pk %}" class="btn-edit-comment">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete-comment' comment.pk %}" class="btn-delete-comment">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="comment-content">
+                        {{ comment.content|linebreaks }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-comments">
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

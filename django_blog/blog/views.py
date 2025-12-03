@@ -8,8 +8,8 @@ from django.core.exceptions import ValidationError
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post, Profile
-from .forms import UserRegisterForm, PostForm
+from .models import Post, Profile, Comment
+from .forms import UserRegisterForm, PostForm, CommentForm
 
 def home(request):
     return render(request, 'blog/home.html')
@@ -132,6 +132,59 @@ def profile_view(request):
     }
     return render(request, 'blog/profile.html', context)
 
+# Comment Views
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Your comment has been added!')
+            return redirect('post-detail', pk=post.pk)
+    return redirect('post-detail', pk=post.pk)
+
+@login_required
+def edit_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    
+    # Check if user is the author
+    if comment.author != request.user:
+        messages.error(request, 'You are not authorized to edit this comment.')
+        return redirect('post-detail', pk=comment.post.pk)
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your comment has been updated!')
+            return redirect('post-detail', pk=comment.post.pk)
+    else:
+        form = CommentForm(instance=comment)
+    
+    return render(request, 'blog/comment_form.html', {'form': form, 'comment': comment})
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    
+    # Check if user is the author
+    if comment.author != request.user:
+        messages.error(request, 'You are not authorized to delete this comment.')
+        return redirect('post-detail', pk=comment.post.pk)
+    
+    if request.method == 'POST':
+        post_pk = comment.post.pk
+        comment.delete()
+        messages.success(request, 'Your comment has been deleted!')
+        return redirect('post-detail', pk=post_pk)
+    
+    return render(request, 'blog/comment_confirm_delete.html', {'comment': comment})
+
+# Post Views
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -145,6 +198,8 @@ class PostDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        context['comments'] = self.object.comments.all()
         return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
