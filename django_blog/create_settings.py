@@ -1,4 +1,5 @@
-from pathlib import Path
+with open('django_blog/settings.py', 'w') as f:
+    f.write('''from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -85,3 +86,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+''')
+print("Settings file created successfully")
