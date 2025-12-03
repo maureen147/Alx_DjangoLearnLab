@@ -1,28 +1,35 @@
-<!-- blog/templates/blog/home.html -->
 {% extends 'blog/base.html' %}
 
 {% block content %}
 <div class="hero">
     <h1>Welcome to Django Blog</h1>
     <p>A simple blogging platform built with Django</p>
-    <a href="{% url 'post-list' %}" class="btn">View All Posts</a>
+    <div class="hero-buttons">
+        <a href="{% url 'post-list' %}" class="btn btn-primary">View Blog Posts</a>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-secondary">Join Now</a>
+        {% endif %}
+    </div>
 </div>
 
-<section class="features">
+<div class="features">
     <h2>Features</h2>
     <div class="feature-grid">
         <div class="feature">
-            <h3>Easy to Use</h3>
-            <p>Simple interface for writing and managing blog posts</p>
+            <i class="fas fa-pencil-alt"></i>
+            <h3>Write Posts</h3>
+            <p>Create and publish your own blog posts</p>
         </div>
         <div class="feature">
+            <i class="fas fa-users"></i>
+            <h3>User Profiles</h3>
+            <p>Customize your profile with bio and picture</p>
+        </div>
+        <div class="feature">
+            <i class="fas fa-lock"></i>
             <h3>Secure</h3>
-            <p>Built with Django's security features</p>
-        </div>
-        <div class="feature">
-            <h3>Responsive</h3>
-            <p>Works on all devices</p>
+            <p>Protected with authentication and authorization</p>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

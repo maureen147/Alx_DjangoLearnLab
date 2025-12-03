@@ -1,25 +1,97 @@
-<!-- blog/templates/blog/post_list.html -->
+<!-- Update your existing blog/templates/blog/post_list.html -->
 {% extends 'blog/base.html' %}
 
-{% block title %}All Posts - Django Blog{% endblock %}
+{% block title %}Blog Posts - Django Blog{% endblock %}
 
 {% block content %}
-<h1>Blog Posts</h1>
+<div class="posts-header">
+    <h1>Blog Posts</h1>
+    {% if user.is_authenticated %}
+        <a href="{% url 'post-create' %}" class="btn btn-primary">Create New Post</a>
+    {% endif %}
+</div>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
 {% if posts %}
     {% for post in posts %}
-    <article class="post">
-        <h2>{{ post.title }}</h2>
-        <div class="post-meta">
-            <span>By {{ post.author.username }}</span>
-            <span>|</span>
-            <span>{{ post.published_date|date:"F d, Y" }}</span>
-        </div>
-        <p>{{ post.content|truncatewords:100 }}</p>
-        <a href="{% url 'post-detail' post.pk %}" class="btn">Read More</a>
-    </article>
+        <article class="post-card">
+            <div class="post-header">
+                <h2 class="post-title">
+                    <a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a>
+                </h2>
+                <div class="post-meta">
+                    <span class="author">
+                        <i class="fas fa-user"></i>
+                        {{ post.author.username }}
+                    </span>
+                    <span class="date">
+                        <i class="fas fa-calendar"></i>
+                        {{ post.published_date|date:"F d, Y" }}
+                    </span>
+                    {% if post.author == user %}
+                        <span class="actions">
+                            <a href="{% url 'post-update' post.pk %}" class="btn-edit">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'post-delete' post.pk %}" class="btn-delete">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="post-content">
+                {{ post.content|truncatewords:100|linebreaks }}
+            </div>
+            
+            <div class="post-footer">
+                <a href="{% url 'post-detail' post.pk %}" class="btn-read-more">
+                    Read More <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
     {% endfor %}
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1" class="btn-page">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn-page">Previous</a>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="btn-page active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}" class="btn-page">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn-page">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="btn-page">Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
 {% else %}
-    <p>No posts available yet. <a href="/admin/">Login to admin</a> to create your first post!</p>
+    <div class="no-posts">
+        <p>No blog posts yet.</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'post-create' %}" class="btn btn-primary">Write Your First Post</a>
+        {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to create a post.</p>
+        {% endif %}
+    </div>
 {% endif %}
 {% endblock %}
