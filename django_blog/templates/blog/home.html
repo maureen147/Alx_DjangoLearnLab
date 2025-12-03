@@ -1,37 +1,22 @@
 {% extends 'blog/base.html' %}
-{% load static %}
-
-{% block title %}Home - Django Blog{% endblock %}
 
 {% block content %}
-    <div class="hero">
-        <h1>Welcome to Django Blog</h1>
-        <p>A platform for sharing thoughts, ideas, and stories.</p>
-        {% if user.is_authenticated %}
-            <a href="{% url 'post-create' %}" class="btn btn-create">Create Your First Post</a>
-        {% else %}
-            <a href="{% url 'register' %}" class="btn btn-create">Join Our Community</a>
-        {% endif %}
+<h1>Welcome to Django Blog</h1>
+
+{% if user.is_authenticated %}
+    <p>Hello, {{ user.username }}! <a href="{% url 'post_create' %}">Create a new post</a></p>
+{% else %}
+    <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to create posts.</p>
+{% endif %}
+
+<h2>Recent Posts</h2>
+{% for post in posts %}
+    <div style="border: 1px solid #ccc; padding: 10px; margin: 10px 0;">
+        <h3><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h3>
+        <p>By {{ post.author }} on {{ post.date_posted|date:"F d, Y" }}</p>
+        <p>{{ post.content|truncatewords:30 }}</p>
     </div>
-    
-    <div class="recent-posts">
-        <h2>Recent Posts</h2>
-        
-        {% for post in posts %}
-            <article class="post">
-                <h3><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h3>
-                <div class="post-meta">
-                    By {{ post.author.username }} on {{ post.published_date|date:"F d, Y" }}
-                </div>
-                <p>{{ post.content|truncatewords:30 }}</p>
-                <a href="{% url 'post-detail' post.pk %}" class="read-more">Read more →</a>
-            </article>
-        {% empty %}
-            <p>No posts yet. Be the first to share something!</p>
-        {% endfor %}
-        
-        <div class="view-all">
-            <a href="{% url 'post-list' %}" class="btn">View All Posts</a>
-        </div>
-    </div>
+{% empty %}
+    <p>No posts yet.</p>
+{% endfor %}
 {% endblock %}
