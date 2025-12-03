@@ -85,3 +85,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# Static files root for collectstatic
+STATIC_ROOT = BASE_DIR / 'staticfiles'
