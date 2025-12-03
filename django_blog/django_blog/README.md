@@ -22,3 +22,26 @@ A simple blogging platform built with Django.
 7. Run development server: `python manage.py runserver`
 
 ## Project Structure
+# Django Blog - Comment System
+
+## Features Implemented
+- Comment model with ForeignKey relationships to Post and User
+- CommentForm for creating/editing comments
+- Generic views for CRUD operations:
+  - CommentCreateView
+  - CommentUpdateView  
+  - CommentDeleteView
+- Permission enforcement (only authors can edit/delete)
+- Templates for all comment operations
+- Integration with existing blog post system
+
+## How to Use
+1. Navigate to a blog post
+2. Login to add comments
+3. Comment authors can edit/delete their comments
+4. All users can read comments
+
+## URLs
+- Add comment: `/post/<pk>/comment/`
+- Edit comment: `/comment/<pk>/edit/`
+- Delete comment: `/comment/<pk>/delete/`
