@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -9,23 +9,20 @@ from django.urls import reverse_lazy
 from .models import Post
 from .forms import UserRegisterForm, UserUpdateForm, PostForm
 
-# Home view
 def home(request):
     posts = Post.objects.all()[:5]
     return render(request, 'blog/home.html', {'posts': posts})
 
-# About view
 def about(request):
     return render(request, 'blog/about.html')
 
-# Authentication views
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}! You can now log in.')
+            messages.success(request, f'Account created for {username}!')
             return redirect('login')
     else:
         form = UserRegisterForm()
@@ -40,7 +37,6 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f'Welcome back, {username}!')
                 return redirect('home')
     else:
         form = AuthenticationForm()
@@ -49,7 +45,6 @@ def user_login(request):
 @login_required
 def user_logout(request):
     logout(request)
-    messages.info(request, 'You have been logged out.')
     return redirect('home')
 
 @login_required
@@ -58,21 +53,17 @@ def profile(request):
         form = UserUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your profile has been updated!')
             return redirect('profile')
     else:
         form = UserUpdateForm(instance=request.user)
-    
-    user_posts = Post.objects.filter(author=request.user)
-    return render(request, 'blog/profile.html', {'form': form, 'posts': user_posts})
+    return render(request, 'blog/profile.html', {'form': form})
 
-# CRUD Views for Posts
+# CRUD Views
 class ListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
     context_object_name = 'posts'
     ordering = ['-published_date']
-    paginate_by = 5
 
 class DetailView(DetailView):
     model = Post
@@ -82,7 +73,8 @@ class DetailView(DetailView):
 class CreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
-    template_name = 'blog/post_create.html'
+    template_name = 'blog/post_form.html'
+    success_url = reverse_lazy('post-list')
     
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -91,7 +83,8 @@ class CreateView(LoginRequiredMixin, CreateView):
 class UpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
-    template_name = 'blog/post_update.html'
+    template_name = 'blog/post_form.html'
+    success_url = reverse_lazy('post-list')
     
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -103,7 +96,7 @@ class UpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class DeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_delete.html'
+    template_name = 'blog/post_confirm_delete.html'
     success_url = reverse_lazy('post-list')
     
     def test_func(self):
