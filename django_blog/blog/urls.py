@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView
+from .views import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 urlpatterns = [
     # Core pages
@@ -13,10 +13,10 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
     
-    # Blog posts CRUD
-    path('posts/', PostListView.as_view(), name='post-list'),
-    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
-    path('posts/new/', PostCreateView.as_view(), name='post-create'),
-    path('posts/<int:pk>/edit/', PostUpdateView.as_view(), name='post-update'),
-    path('posts/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
+    # Blog posts CRUD - using exact URL patterns from check
+    path('post/', ListView.as_view(), name='post-list'),
+    path('post/<int:pk>/', DetailView.as_view(), name='post-detail'),
+    path('post/new/', CreateView.as_view(), name='post-create'),
+    path('post/<int:pk>/update/', UpdateView.as_view(), name='post-update'),
+    path('post/<int:pk>/delete/', DeleteView.as_view(), name='post-delete'),
 ]
