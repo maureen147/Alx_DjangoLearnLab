@@ -1,34 +1,9 @@
-<!-- In the comments section -->
-{% for comment in comments %}
-<div class="comment">
-    <div class="comment-content">
-        {{ comment.content|linebreaks }}
-    </div>
-    <div class="comment-meta">
-        By {{ comment.author.username }} on {{ comment.created_at|date:"F j, Y, g:i a" }}
-        {% if comment.updated_at != comment.created_at %}
-            (updated on {{ comment.updated_at|date:"F j, Y, g:i a" }})
-        {% endif %}
-    </div>
-    
-    <!-- Comment actions for the author -->
-    {% if user.is_authenticated and user == comment.author %}
-    <div class="comment-actions">
-        <a href="{% url 'edit-comment' pk=comment.pk %}">Edit</a>
-        <a href="{% url 'delete-comment' pk=comment.pk %}">Delete</a>
-    </div>
-    {% endif %}
-</div>
-{% empty %}
-<p>No comments yet. Be the first to comment!</p>
-{% endfor %}
+<!-- Change from: -->
+<a href="{% url 'add-comment' pk=post.pk %}">Add Comment</a>
+<a href="{% url 'edit-comment' pk=comment.pk %}">Edit</a>
+<a href="{% url 'delete-comment' pk=comment.pk %}">Delete</a>
 
-<!-- Comment form -->
-{% if user.is_authenticated %}
-<div class="comment-form">
-    <h3>Add a comment</h3>
-    <a href="{% url 'add-comment' pk=post.pk %}" class="btn btn-primary">Add Comment</a>
-</div>
-{% else %}
-<p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
-{% endif %}
+<!-- To: -->
+<a href="{% url 'add-comment' pk=post.pk %}">Add Comment</a>
+<a href="{% url 'edit-comment' pk=comment.pk %}">Edit</a>  
+<a href="{% url 'delete-comment' pk=comment.pk %}">Delete</a>

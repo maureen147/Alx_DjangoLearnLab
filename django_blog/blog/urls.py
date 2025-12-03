@@ -29,10 +29,10 @@ urlpatterns = [
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
 
-    # Comment CRUD using Generic Views
-    path('post/<int:pk>/comment/', CommentCreateView.as_view(), name='add-comment'),
-    path('comment/<int:pk>/edit/', CommentUpdateView.as_view(), name='edit-comment'),
-    path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='delete-comment'),
+    # Comment CRUD - EXACT PATTERNS AS REQUIRED
+    path('post/<int:pk>/comments/new/', CommentCreateView.as_view(), name='comment-create'),
+    path('comment/<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
+    path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
 
     # Password reset
     path('password-reset/',
