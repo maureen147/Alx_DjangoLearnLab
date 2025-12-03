@@ -1,6 +1,8 @@
-# blog/models.py
+# blog/models.py - Simplified version
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 
 class Post(models.Model):
@@ -14,3 +16,23 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=500, blank=True)
+    profile_pic = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
+    
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+# Create profile when user is created
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.get_or_create(user=instance)
+
+# Save profile when user is saved
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    Profile.objects.get_or_create(user=instance)
+    instance.profile.save()

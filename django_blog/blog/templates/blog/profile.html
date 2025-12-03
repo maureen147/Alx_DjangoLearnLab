@@ -1,0 +1,86 @@
+<!-- blog/templates/blog/profile.html -->
+{% extends 'blog/base.html' %}
+
+{% block title %}Profile - Django Blog{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="profile-header">
+        {% if user.profile.profile_pic and user.profile.profile_pic.url %}
+            <img src="{{ user.profile.profile_pic.url }}" alt="{{ user.username }}" class="profile-img">
+        {% else %}
+            <div class="profile-img-placeholder">{{ user.username|first|upper }}</div>
+        {% endif %}
+        <div class="profile-info">
+            <h2>{{ user.username }}</h2>
+            <p class="email">{{ user.email }}</p>
+            {% if user.profile.bio %}
+                <p class="bio">{{ user.profile.bio }}</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="profile-form">
+        <h3>Update Profile</h3>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username">Username *</label>
+                <input type="text" name="username" id="id_username" class="form-control" 
+                       value="{{ user.username }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">Email *</label>
+                <input type="email" name="email" id="id_email" class="form-control" 
+                       value="{{ user.email }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_bio">Bio</label>
+                <textarea name="bio" id="id_bio" class="form-control" rows="4" 
+                          placeholder="Tell us about yourself...">{{ user.profile.bio }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_profile_pic">Profile Picture</label>
+                <input type="file" name="profile_pic" id="id_profile_pic" class="form-control" 
+                       accept="image/*">
+                <small class="help-text">Max file size: 5MB. Supported formats: JPG, PNG, GIF.</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    </div>
+    
+    <div class="user-posts">
+        <h3>My Posts</h3>
+        {% if user.posts.all %}
+            <ul class="post-list">
+                {% for post in user.posts.all %}
+                    <li>
+                        <a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a>
+                        <span class="post-date">{{ post.published_date|date:"F d, Y" }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You haven't written any posts yet.</p>
+            <a href="/admin/blog/post/add/" class="btn">Write Your First Post</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

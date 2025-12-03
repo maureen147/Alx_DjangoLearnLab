@@ -1,41 +1,21 @@
-<!-- blog/templates/blog/base.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Django Blog{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'blog/css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <div class="container">
-            <a href="{% url 'home' %}" class="logo">DjangoBlog</a>
-            <div class="nav-links">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'post-list' %}">Blog</a>
-                {% if user.is_authenticated %}
-                    <a href="/admin/blog/post/add/">New Post</a>
-                    <a href="/admin/logout/">Logout ({{ user.username }})</a>
-                {% else %}
-                    <a href="/admin/login/">Login</a>
-                {% endif %}
-            </div>
+<!-- In blog/templates/blog/base.html -->
+<nav class="navbar">
+    <div class="container">
+        <a href="{% url 'home' %}" class="logo">DjangoBlog</a>
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'post-list' %}">Blog</a>
+            {% if user.is_authenticated %}
+                <a href="/admin/blog/post/add/">New Post</a>
+                <a href="{% url 'profile' %}">Profile</a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-link">Logout ({{ user.username }})</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
         </div>
-    </nav>
-
-    <main class="container">
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Django Blog</p>
-        </div>
-    </footer>
-
-    <script src="{% static 'blog/js/main.js' %}"></script>
-</body>
-</html>
+    </div>
+</nav>
