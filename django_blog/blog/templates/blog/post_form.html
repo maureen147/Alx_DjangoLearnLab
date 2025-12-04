@@ -13,7 +13,43 @@
             <div class="card-body">
                 <form method="POST">
                     {% csrf_token %}
-                    {{ form|crispy }}
+                    
+                    <!-- Title Field -->
+                    <div class="form-group">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.help_text %}
+                        <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                        {% endif %}
+                        {% if form.title.errors %}
+                        <div class="alert alert-danger">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Content Field -->
+                    <div class="form-group">
+                        {{ form.content.label_tag }}
+                        {{ form.content }}
+                        {% if form.content.help_text %}
+                        <small class="form-text text-muted">{{ form.content.help_text }}</small>
+                        {% endif %}
+                        {% if form.content.errors %}
+                        <div class="alert alert-danger">{{ form.content.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Tags Field with TagWidget -->
+                    <div class="form-group">
+                        {{ form.tags.label_tag }}
+                        {{ form.tags }}
+                        {% if form.tags.help_text %}
+                        <small class="form-text text-muted">{{ form.tags.help_text }}</small>
+                        {% endif %}
+                        {% if form.tags.errors %}
+                        <div class="alert alert-danger">{{ form.tags.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
                     <div class="form-group mt-4">
                         <button type="submit" class="btn btn-primary">
                             {% if object %}Update Post{% else %}Create Post{% endif %}
@@ -23,6 +59,29 @@
                 </form>
             </div>
         </div>
+        
+        <!-- Tag Instructions -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Tag Instructions</h5>
+                <ul>
+                    <li>Separate tags with commas (e.g., "django, python, web-development")</li>
+                    <li>Tags are case-insensitive</li>
+                    <li>Existing tags will be reused</li>
+                    <li>New tags will be created automatically</li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Style for tag input */
+    input[data-role="tagsinput"] {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 100%;
+    }
+</style>
 {% endblock %}
