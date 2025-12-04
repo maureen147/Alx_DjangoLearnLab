@@ -10,7 +10,7 @@ from .views import (
     CommentCreateView,
     CommentUpdateView,
     CommentDeleteView,
-    PostsByTagView
+    PostByTagListView  # Changed from PostsByTagView
 )
 
 urlpatterns = [
@@ -36,7 +36,7 @@ urlpatterns = [
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
     
     # Tagging and Search
-    path('tags/<slug:tag_slug>/', PostsByTagView.as_view(), name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),  # Updated
     path('search/', views.search_posts, name='search'),
     
     # Password reset

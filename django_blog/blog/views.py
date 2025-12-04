@@ -169,7 +169,7 @@ def search_posts(request):
         'query': query
     })
 
-class PostsByTagView(ListView):
+class PostByTagListView(ListView):
     model = Post
     template_name = 'blog/posts_by_tag.html'
     context_object_name = 'posts'
