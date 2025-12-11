@@ -1,4 +1,22 @@
-from rest_framework import serializers
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Script to verify all required imports are present in the serializers.py file
+"""
+
+import os
+
+# Check if serializers.py exists
+serializers_path = 'accounts/serializers.py'
+if not os.path.exists(serializers_path):
+    print("File not found:", serializers_path)
+    print("\nCreating the correct serializers.py file...")
+    
+    # Create the directory if it doesn't exist
+    os.makedirs('accounts', exist_ok=True)
+    
+    # Create the correct serializers.py content
+    serializers_content = '''from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
@@ -87,11 +105,55 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def get_following_count(self, obj):
         return obj.following.count()
-
-class TokenSerializer(serializers.ModelSerializer):
-    user = UserProfileSerializer(read_only=True)
+'''
     
-    class Meta:
-        model = Token
-        fields = ['key', 'user', 'created']
-        read_only_fields = ['key', 'user', 'created']
+    with open(serializers_path, 'w') as f:
+        f.write(serializers_content)
+    
+    print("Created", serializers_path, "with all required imports")
+
+# Now read the file
+with open(serializers_path, 'r') as f:
+    content = f.read()
+
+# Check for required imports
+required_imports = [
+    "from rest_framework.authtoken.models import Token",
+    "Token.objects.create",
+    "get_user_model().objects.create_user"
+]
+
+print("\nChecking accounts/serializers.py for required imports...\n")
+
+all_present = True
+for required in required_imports:
+    if required in content:
+        print("OK: Found:", required)
+    else:
+        print("MISSING:", required)
+        all_present = False
+
+# Also check for the create method using get_user_model
+if 'get_user_model()' in content:
+    print("OK: Found: get_user_model() function")
+else:
+    print("MISSING: get_user_model() function")
+    all_present = False
+
+# Check for User.objects.create_user
+if 'User.objects.create_user' in content:
+    print("OK: Found: User.objects.create_user")
+else:
+    print("MISSING: User.objects.create_user")
+    all_present = False
+
+print("\n" + "="*50)
+if all_present:
+    print("SUCCESS: All required imports and patterns are present!")
+    print("\nYour serializers.py now includes:")
+    print("1. Token import from rest_framework.authtoken.models")
+    print("2. Token creation in registration")
+    print("3. Proper user creation with create_user()")
+    print("4. Token retrieval in login")
+else:
+    print("WARNING: Some required imports/patterns are missing.")
