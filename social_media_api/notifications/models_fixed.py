@@ -45,15 +45,16 @@ class Notification(models.Model):
     # Read status
     is_read = models.BooleanField(default=False)
     
-    # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    timestamp = models.DateTimeField(auto_now_add=True)  # Added timestamp field as required
+    # Timestamps - using created_at as timestamp (they serve same purpose)
+    # The task asks for "timestamp" field specifically
+    timestamp = models.DateTimeField(auto_now_add=True)  # Main timestamp field
+    created_at = models.DateTimeField(auto_now_add=True)  # Keep for backward compatibility
     read_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-timestamp']  # Order by timestamp
         indexes = [
-            models.Index(fields=['recipient', 'is_read', 'created_at']),
+            models.Index(fields=['recipient', 'is_read', 'timestamp']),
         ]
     
     def __str__(self):
