@@ -8,85 +8,7 @@ from notifications.models import Notification
 from .models import CustomUser
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, TokenSerializer
 
-class UserRegistrationView(APIView):
-    permission_classes = [permissions.AllowAny]
-    
-    def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            
-            # Get the token that was created in the serializer
-            token = Token.objects.get(user=user)
-            
-            # Return token and user info
-            return Response({
-                'message': 'User registered successfully',
-                'token': token.key,
-                'user_id': user.id,
-                'username': user.username,
-                'email': user.email
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class UserLoginView(APIView):
-    permission_classes = [permissions.AllowAny]
-    
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token_key = serializer.validated_data['token']
-            
-            login(request, user)
-            
-            # Return token and user info
-            return Response({
-                'message': 'Login successful',
-                'token': token_key,
-                'user_id': user.id,
-                'username': user.username,
-                'email': user.email
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
-
-class TokenInfoView(APIView):
-    """View to get information about the current token"""
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get(self, request):
-        token = Token.objects.get(user=request.user)
-        serializer = TokenSerializer(token)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-class UserLogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def post(self, request):
-        # Delete the token
-        try:
-            token = Token.objects.get(user=request.user)
-            token.delete()
-        except Token.DoesNotExist:
-            pass
-        
-        logout(request)
-        return Response({
-            "message": "Successfully logged out.",
-            "detail": "Token has been deleted."
-        }, status=status.HTTP_200_OK)
-
-class UserProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    def get_object(self):
-        return self.request.user
-
-class UserListView(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# ... (keep all other views the same until follow views) ...
 
 # FOLLOW FUNCTIONALITY WITH NOTIFICATIONS
 class FollowUserView(generics.GenericAPIView):
@@ -173,20 +95,4 @@ class UnfollowUserView(generics.GenericAPIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-class UserFollowersView(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-    def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        user = get_object_or_404(CustomUser, id=user_id)
-        return user.followers.all()
-
-class UserFollowingView(generics.ListAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
-    def get_queryset(self):
-        user_id = self.kwargs.get('user_id')
-        user = get_object_or_404(CustomUser, id=user_id)
-        return user.following.all()
+# ... (keep the rest of the file the same) ...

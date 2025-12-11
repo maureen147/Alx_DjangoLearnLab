@@ -1,7 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
-from .feed_views import UserFeedView 
 
 router = DefaultRouter()
 router.register(r'posts', views.PostViewSet, basename='post')
@@ -9,5 +8,9 @@ router.register(r'comments', views.CommentViewSet, basename='comment')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('feed/', UserFeedView.as_view(), name='user-feed'),
+    # Add feed endpoint for Task 3
+    path('feed/', views.FeedView.as_view(), name='user-feed'),
+    # Explicit like/unlike endpoints (for the task requirement)
+    path('posts/<int:pk>/like/', views.PostViewSet.as_view({'post': 'like'}), name='post-like'),
+    path('posts/<int:pk>/unlike/', views.PostViewSet.as_view({'post': 'like'}), name='post-unlike'),
 ]

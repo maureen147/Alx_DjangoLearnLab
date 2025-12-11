@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import Notification
 from .models import Post, Comment, Like
 from .serializers import (
     PostSerializer, CommentSerializer, 
@@ -41,7 +43,26 @@ class PostViewSet(viewsets.ModelViewSet):
         if not created:
             # Unlike if already liked
             like.delete()
+            
+            # Delete like notification if exists
+            Notification.objects.filter(
+                recipient=post.author,
+                actor=user,
+                verb='like',
+                target_content_type=ContentType.objects.get_for_model(post),
+                target_object_id=post.id
+            ).delete()
+            
             return Response({'status': 'unliked', 'likes_count': post.likes.count()})
+        
+        # Create notification for post author (unless liking own post)
+        if post.author != user:
+            Notification.create_notification(
+                recipient=post.author,
+                actor=user,
+                verb='like',
+                target=post
+            )
         
         return Response({'status': 'liked', 'likes_count': post.likes.count()})
     
@@ -69,9 +90,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        comment = serializer.save(author=self.request.user)
+        
+        # Create notification for post author (unless commenting on own post)
+        if comment.post.author != comment.author:
+            Notification.create_notification(
+                recipient=comment.post.author,
+                actor=comment.author,
+                verb='comment',
+                target=comment.post
+            )
 
-# FEED VIEW FOR TASK 3 - WITH EXACT PATTERNS CHECKER WANTS
+# FEED VIEW FOR TASK 3
 class FeedView(generics.ListAPIView):
     """
     View to get posts from users that the current user follows
@@ -85,35 +115,4 @@ class FeedView(generics.ListAPIView):
         following_users = self.request.user.following.all()
         
         # Get posts from those users, ordered by creation date (most recent first)
-        # EXACT PATTERN: Post.objects.filter(author__in=following_users).order_by
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        
-        # Get paginated data
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            response = self.get_paginated_response(serializer.data)
-            # Add feed metadata
-            response.data['feed_info'] = {
-                'total_posts': queryset.count(),
-                'following_count': request.user.following.count(),
-                'description': f'Posts from {request.user.following.count()} users you follow'
-            }
-            return response
-        
-        serializer = self.get_serializer(queryset, many=True)
-        
-        # Add feed metadata
-        response_data = {
-            'feed_info': {
-                'total_posts': queryset.count(),
-                'following_count': request.user.following.count(),
-                'description': f'Posts from {request.user.following.count()} users you follow'
-            },
-            'posts': serializer.data
-        }
-        
-        return Response(response_data)
