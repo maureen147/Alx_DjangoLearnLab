@@ -10,8 +10,12 @@ urlpatterns = [
     path('users/', views.UserListView.as_view(), name='user-list'),
     
     # Follow management endpoints for Task 3
-    path('users/<int:user_id>/follow/', views.FollowUserView.as_view(), name='follow-user'),
-    path('users/<int:user_id>/unfollow/', views.UnfollowUserView.as_view(), name='unfollow-user'),
+    # EXACT PATTERN: follow/<int:user_id>/
+    path('follow/<int:user_id>/', views.FollowUserView.as_view(), name='follow-user'),
+    # EXACT PATTERN: unfollow/<int:user_id>/
+    path('unfollow/<int:user_id>/', views.UnfollowUserView.as_view(), name='unfollow-user'),
+    
+    # Additional endpoints (not required but good to have)
     path('users/<int:user_id>/followers/', views.UserFollowersView.as_view(), name='user-followers'),
     path('users/<int:user_id>/following/', views.UserFollowingView.as_view(), name='user-following'),
 ]
