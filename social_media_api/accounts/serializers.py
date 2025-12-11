@@ -33,7 +33,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         
         # Create user using create_user method (handles password hashing)
-        user = User.objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
         
         # Create token for the user
         Token.objects.create(user=user)
