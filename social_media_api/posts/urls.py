@@ -10,7 +10,7 @@ urlpatterns = [
     path('', include(router.urls)),
     # Add feed endpoint for Task 3
     path('feed/', views.FeedView.as_view(), name='user-feed'),
-    # Explicit like/unlike endpoints (for the task requirement)
-    path('posts/<int:pk>/like/', views.PostViewSet.as_view({'post': 'like'}), name='post-like'),
-    path('posts/<int:pk>/unlike/', views.PostViewSet.as_view({'post': 'like'}), name='post-unlike'),
+    # Separate like/unlike endpoints (for the task requirement)
+    path('posts/<int:pk>/like/', views.LikePostView.as_view(), name='post-like'),
+    path('posts/<int:pk>/unlike/', views.UnlikePostView.as_view(), name='post-unlike'),
 ]
