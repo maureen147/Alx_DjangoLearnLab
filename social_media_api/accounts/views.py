@@ -87,8 +87,11 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-# FOLLOW FUNCTIONALITY FOR TASK 3
-class FollowUserView(APIView):
+# FOLLOW FUNCTIONALITY FOR TASK 3 - USING GenericAPIView
+class FollowUserView(generics.GenericAPIView):
+    """
+    View to follow a user
+    """
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, user_id):
@@ -123,7 +126,10 @@ class FollowUserView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-class UnfollowUserView(APIView):
+class UnfollowUserView(generics.GenericAPIView):
+    """
+    View to unfollow a user
+    """
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, user_id):
