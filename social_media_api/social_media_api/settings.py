@@ -5,15 +5,16 @@ import dj_database_url
 import os
 from pathlib import Path
 from datetime import timedelta
+from decouple import config 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'development-key-123')
+SECRET_KEY = config('SECRET_KEY', default='development-key-123')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = ['*'] 
 
 # Application definition
@@ -75,6 +76,7 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -82,10 +84,11 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL if DATABASE_URL exists (Railway provides this)
-if 'DATABASE_URL' in os.environ:
+# Render PostgreSQL database (live)
+if 'RENDER' in os.environ:
     DATABASES['default'] = dj_database_url.config(
         conn_max_age=600,
+        conn_health_checks=True,
         ssl_require=True
     )
 # Password validation
@@ -154,6 +157,25 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+
+# Render deployment settings
+if 'RENDER' in os.environ:
+    # Render provides this environment variable
+    RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    if RENDER_EXTERNAL_HOSTNAME:
+        ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    
+    # Security settings for production
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Static files
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
