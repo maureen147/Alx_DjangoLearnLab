@@ -72,6 +72,9 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 # Database
 # Database
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -79,7 +82,7 @@ DATABASES = {
     }
 }
 
-# Railway will override this with DATABASE_URL environment variable
+# Use PostgreSQL if DATABASE_URL exists (Railway provides this)
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(
         conn_max_age=600,
@@ -145,7 +148,7 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    
+
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # For development only
 
