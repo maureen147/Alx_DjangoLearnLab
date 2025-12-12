@@ -59,3 +59,18 @@ if 'RENDER' in os.environ or 'DATABASE_URL' in os.environ:
         conn_health_checks=True,
         ssl_require=True
     )
+
+# ===== STATIC FILES CONFIGURATION =====
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# Media files (user uploaded content)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# WhiteNoise for serving static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
