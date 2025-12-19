@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
-from .models import CustomUser
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import User
+
+CustomUser = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -19,6 +22,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         if 'profile_picture' in validated_data:
             user.profile_picture = validated_data['profile_picture']
         user.save()
+        
+        # Create token for the user
+        Token.objects.create(user=user)
+        
         return user
 
 class UserLoginSerializer(serializers.Serializer):
