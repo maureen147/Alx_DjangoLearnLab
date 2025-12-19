@@ -16,7 +16,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         user.bio = validated_data.get('bio', '')
-        user.profile_picture = validated_data.get('profile_picture', '')
+        if 'profile_picture' in validated_data:
+            user.profile_picture = validated_data['profile_picture']
         user.save()
         return user
 
