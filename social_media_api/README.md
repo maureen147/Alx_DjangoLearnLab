@@ -1,33 +1,39 @@
-# Social Media API
+# Social Media API - User Authentication
 
-A Django REST Framework based Social Media API with user authentication and profile management.
+## Project Setup
 
-## Features
+1. Navigate to the project directory: cd social_media_api
+2. Install dependencies: pip install -r requirements.txt
+3. Run migrations: python manage.py migrate
+4. Create superuser (optional): python manage.py createsuperuser
+5. Run development server: python manage.py runserver
 
-- Custom user model with bio, profile picture, and followers system
-- Token-based authentication
-- User registration, login, and logout
-- User profile management
-- Follow/unfollow functionality
-- RESTful API endpoints
+## API Endpoints
 
-## Setup Instructions
+### User Registration
+- **URL**: /register/
+- **Method**: POST
+- **Data**: {"username": "", "email": "", "password": "", "bio": "", "profile_picture": ""}
+- **Response**: Returns authentication token
 
-### 1. Clone and Install Dependencies
+### User Login
+- **URL**: /login/
+- **Method**: POST
+- **Data**: {"username": "", "password": ""}
+- **Response**: Returns authentication token
 
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd social_media_api
+### User Profile
+- **URL**: /profile/
+- **Method**: GET (view profile), PUT (update profile)
+- **Authentication**: Token required
+- **Headers**: Authorization: Token <your_token>
 
-# Create virtual environment
-python -m venv venv
+## User Model
+Custom user model extends Django's AbstractUser with:
+- bio: Text field for user biography
+- profile_picture: URL field for profile image
+- followers: Many-to-many relationship with other users
 
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On Mac/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+## Authentication
+Uses Django REST Framework Token Authentication.
+Include token in request headers: "Authorization: Token <your_token>"
